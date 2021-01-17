@@ -1,8 +1,16 @@
 const express = require('express');
-const { Client } = require('pg');
+const { Pool } = require('pg');
 const format = require('pg-format');
 
 const router = express.Router();
+
+let pool = new Pool({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PWD,
+    database: process.env.DB_NAME,
+});
 
 async function writeToDatabase(pingData) {
     if (!pingData || !pingData.length) return;
@@ -18,18 +26,8 @@ async function writeToDatabase(pingData) {
         ];
     });
 
-    let client;
     try {
-        let client = new Client({
-            host: process.env.DB_HOST,
-            port: process.env.DB_PORT,
-            user: process.env.DB_USER,
-            password: process.env.DB_PWD,
-            database: process.env.DB_NAME,
-        });
-        await client.connect();
-
-        await client.query(
+        await pool.query(
             format(
                 'INSERT INTO %I' +
                     ' (time, session_id, heart_rate, kmph, rpm, watts) VALUES %L',
@@ -39,10 +37,6 @@ async function writeToDatabase(pingData) {
         );
     } catch (e) {
         console.error('Failure', mapped, e);
-    } finally {
-        if (client) {
-            await client.end();
-        }
     }
 }
 
