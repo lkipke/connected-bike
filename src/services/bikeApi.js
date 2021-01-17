@@ -1,5 +1,5 @@
 export let uploadPingData = async (uploadData) => {
-    await fetch('http://localhost:9000/sendPing', {
+    await fetch('/sendPing', {
         method: 'POST',
         body: JSON.stringify(uploadData),
         headers: {

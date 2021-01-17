@@ -66,7 +66,7 @@ function App() {
 
         let interval = setInterval(() => {
             handleUpload();
-        }, 2000);
+        }, 10000);
         setIntervalId(interval);
     };
 
