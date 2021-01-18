@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, Pane, TextInputField, Text } from 'evergreen-ui';
 import { logIn } from '../services/bikeApi';
 
-let LoginDialog = ({ isDialogShown, setDialogShown }) => {
+let LoginDialog = ({ isDialogShown, setDialogShown, setLoggedInUser }) => {
     let [username, setUsername] = useState('');
     let [password, setPassword] = useState('');
 
@@ -22,8 +22,10 @@ let LoginDialog = ({ isDialogShown, setDialogShown }) => {
 
         setLoading(true);
         logIn(username, password)
-            .then(() => {
+            .then((user) => {
                 setLoading(false);
+                setLoggedInUser(user);
+                setDialogShown(false);
             })
             .catch((e) => {
                 setLoading(false);

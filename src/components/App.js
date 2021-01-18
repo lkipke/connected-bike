@@ -21,6 +21,7 @@ function App() {
     const [intervalId, setIntervalId] = useState([]);
     const [sessionId, setSessionId] = useState(uuidv4());
     const [isDialogShown, setDialogShown] = useState(false);
+    const [loggedInUser, setLoggedInUser] = useState(null);
 
     const unpushedData = useRef([]);
     const isRecording = useRef(false);
@@ -83,10 +84,13 @@ function App() {
 
     return (
         <Pane>
-            <Button onClick={() => setDialogShown(true)}>log in</Button>
+            <Button onClick={() => setDialogShown(true)}>
+                {loggedInUser ? loggedInUser.username : 'log in'}
+            </Button>
             <LoginDialog
                 isDialogShown={isDialogShown}
                 setDialogShown={setDialogShown}
+                setLoggedInUser={setLoggedInUser}
             />
             <div className='app'>
                 <h1>connected bike</h1>
