@@ -1,6 +1,5 @@
 const express = require('express');
-const format = require('pg-format');
-const { Pool } = require('../utils/Pool');
+const { insertPing } = require('../queries');
 
 const router = express.Router();
 
@@ -19,14 +18,8 @@ async function writeToDatabase(pingData) {
     });
 
     try {
-        let query = format(
-            'INSERT INTO %I' +
-                ' (time, session_id, heart_rate, kmph, rpm, watts) VALUES %L',
-            process.env.DB_PINGS_TABLE,
-            mapped
-        );
-        await Pool.query(query);
-	console.log("success!")
+        await insertPing(mapped);
+        console.log('success!');
     } catch (e) {
         console.error('Failure', mapped, e);
     }

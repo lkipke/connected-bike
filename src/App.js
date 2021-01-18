@@ -7,7 +7,7 @@ import './App.css';
 import { useCallback } from 'react';
 import { useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { uploadPingData } from './services/bikeApi';
+import { login, uploadPingData } from './services/bikeApi';
 
 const DISCONNECTED = 'disconnected';
 const CONNECTED = 'connected';
