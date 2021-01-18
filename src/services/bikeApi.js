@@ -1,5 +1,7 @@
+//let host = 'http://localhost:9000/';
+let host = '';
 export let uploadPingData = async (uploadData) => {
-    await fetch('api/sendPing', {
+    await fetch(`${host}api/sendPing`, {
         method: 'POST',
         body: JSON.stringify(uploadData),
         headers: {
@@ -9,7 +11,7 @@ export let uploadPingData = async (uploadData) => {
 };
 
 export let logIn = async (username, password) => {
-    await fetch('api/login', {
+    return await fetch(`${host}api/login`, {
         method: 'POST',
         headers: {
             Authorization: 'Basic ' + btoa(username + ':' + password),

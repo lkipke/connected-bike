@@ -27,7 +27,7 @@ router.post('/', async function (req, res, next) {
             username,
             hashedPassword
         );
-        let user = result.rows[0];
+        user = result.rows[0];
         if (!user) {
             return res.status(404);
         }
@@ -36,6 +36,7 @@ router.post('/', async function (req, res, next) {
         return res.status(500);
     }
 
+		console.log("USER", user)
     let token = generateSessionToken();
     updateAuthToken(username, token);
     res.cookie('AuthToken', token, {
@@ -43,7 +44,7 @@ router.post('/', async function (req, res, next) {
         httpOnly: true,
         signed: true,
     });
-    res.status(200).send(user);
+    res.status(200).json(user);
 });
 
 module.exports = router;

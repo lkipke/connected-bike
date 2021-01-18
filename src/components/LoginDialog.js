@@ -22,7 +22,9 @@ let LoginDialog = ({ isDialogShown, setDialogShown, setLoggedInUser }) => {
 
         setLoading(true);
         logIn(username, password)
+						.then(res => res.json())
             .then((user) => {
+								console.log("USER", user);
                 setLoading(false);
                 setLoggedInUser(user);
                 setDialogShown(false);

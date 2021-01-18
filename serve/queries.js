@@ -20,7 +20,6 @@ async function insertPing(variables) {
     let query = format(
         'INSERT INTO pings' +
             ' (time, session_id, heart_rate, kmph, rpm, watts) VALUES %L',
-        process.env.DB_PINGS_TABLE,
         variables
     );
     let pool = getPool();

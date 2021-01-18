@@ -9,7 +9,7 @@ const getHashedPassword = (password) => {
 
 function requiresAuth() {
     return async (req, res, next) => {
-        if (!req.path.includes('/api/')) {
+        if (!req.path.includes('/api/') || req.path === "/api/login") {
             return next();
         }
 
@@ -18,7 +18,9 @@ function requiresAuth() {
         try {
             let result = await getUserFromAuthToken(AuthToken);
             user = result.rows[0];
+						console.log("GOT THE USER", user);
             if (!user) {
+								console.log("sending 401 from hook");
                 res.sendStatus(401);
                 return;
             }
