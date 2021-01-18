@@ -1,13 +1,14 @@
 import React, { useRef, useState } from 'react';
 import { throttleTime } from 'rxjs/operators';
-import { connect } from './services/bikeDataService';
+import { connect } from '../services/bikeDataService';
 import Dashboard from './Dashboard';
 import { BluetoothIcon, PauseIcon, PlayIcon, StopIcon } from './Icons';
 import './App.css';
 import { useCallback } from 'react';
-import { useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { login, uploadPingData } from './services/bikeApi';
+import { uploadPingData } from '../services/bikeApi';
+import { Button, Pane } from 'evergreen-ui';
+import { LoginDialog } from './LoginDialog';
 
 const DISCONNECTED = 'disconnected';
 const CONNECTED = 'connected';
@@ -19,8 +20,8 @@ function App() {
     const [displayData, setDisplayData] = useState();
     const [intervalId, setIntervalId] = useState([]);
     const [sessionId, setSessionId] = useState(uuidv4());
+    const [isDialogShown, setDialogShown] = useState(false);
 
-    // TODO find a way to not duplicate this flag
     const unpushedData = useRef([]);
     const isRecording = useRef(false);
     const bikeData$ = useRef();
@@ -81,34 +82,41 @@ function App() {
     };
 
     return (
-        <div className='app'>
-            <h1>connected bike</h1>
-            {message && (
-                <div>
-                    <span className='message'>{message}</span>
-                </div>
-            )}
+        <Pane>
+            <Button onClick={() => setDialogShown(true)}>log in</Button>
+            <LoginDialog
+                isDialogShown={isDialogShown}
+                setDialogShown={setDialogShown}
+            />
+            <div className='app'>
+                <h1>connected bike</h1>
+                {message && (
+                    <div>
+                        <span className='message'>{message}</span>
+                    </div>
+                )}
 
-            {activityState === DISCONNECTED && (
-                <button onClick={handleConnect}>
-                    <BluetoothIcon />
-                </button>
-            )}
+                {activityState === DISCONNECTED && (
+                    <button onClick={handleConnect}>
+                        <BluetoothIcon />
+                    </button>
+                )}
 
-            {(activityState === CONNECTED || activityState === STOPPED) && (
-                <button onClick={handleRecord}>
-                    <PlayIcon />
-                </button>
-            )}
+                {(activityState === CONNECTED || activityState === STOPPED) && (
+                    <button onClick={handleRecord}>
+                        <PlayIcon />
+                    </button>
+                )}
 
-            {activityState === RECORDING && (
-                <button onClick={handleStop}>
-                    <PauseIcon />
-                </button>
-            )}
+                {activityState === RECORDING && (
+                    <button onClick={handleStop}>
+                        <PauseIcon />
+                    </button>
+                )}
 
-            {<Dashboard data={displayData} />}
-        </div>
+                {displayData && <Dashboard data={displayData} />}
+            </div>
+        </Pane>
     );
 }
 

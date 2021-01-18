@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './Dashboard.css';
-import { getCalories, getHeartRateZone } from './services/dataTransforms';
+import { getCalories, getHeartRateZone } from '../services/dataTransforms';
 
 const Dashboard = ({ data = {} }) => {
     let { speed, cadence, power, heartRate } = data;
@@ -26,6 +26,8 @@ const Dashboard = ({ data = {} }) => {
         setHeartRateZone(getHeartRateZone(heartRate));
     }, [heartRate]);
 
+    let displayCalories = calories ? Math.round(calories) : '';
+
     return (
         <>
             <div className='dashboard'>
@@ -38,7 +40,7 @@ const Dashboard = ({ data = {} }) => {
                     <Meter label='bpm' value={heartRate} />
                     <span className='heart-rate-zone'>{heartRateZone}</span>
                 </div>
-                <Meter label='calories' value={Math.round(calories)} />
+                <Meter label='calories' value={displayCalories} />
             </div>
         </>
     );

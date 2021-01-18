@@ -8,7 +8,7 @@ export let uploadPingData = async (uploadData) => {
     });
 };
 
-export let login = async (username, password) => {
+export let logIn = async (username, password) => {
     await fetch('api/login', {
         method: 'POST',
         headers: {
