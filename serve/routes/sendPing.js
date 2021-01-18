@@ -1,16 +1,8 @@
 const express = require('express');
-const { Pool } = require('pg');
 const format = require('pg-format');
+const { Pool } = require('../utils/Pool');
 
 const router = express.Router();
-
-let pool = new Pool({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PWD,
-    database: process.env.DB_NAME,
-});
 
 async function writeToDatabase(pingData) {
     if (!pingData || !pingData.length) return;
@@ -27,14 +19,14 @@ async function writeToDatabase(pingData) {
     });
 
     try {
-        await pool.query(
-            format(
-                'INSERT INTO %I' +
-                    ' (time, session_id, heart_rate, kmph, rpm, watts) VALUES %L',
-                process.env.DB_PINGS_TABLE,
-                mapped
-            )
+        let query = format(
+            'INSERT INTO %I' +
+                ' (time, session_id, heart_rate, kmph, rpm, watts) VALUES %L',
+            process.env.DB_PINGS_TABLE,
+            mapped
         );
+        await Pool.query(query);
+	console.log("success!")
     } catch (e) {
         console.error('Failure', mapped, e);
     }
