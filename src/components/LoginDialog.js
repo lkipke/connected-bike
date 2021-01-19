@@ -82,6 +82,7 @@ let LoginDialog = () => {
                         value={password}
                         width={300}
                         validationMessage={passwordError}
+                        type='password'
                     ></TextInputField>
                 </Pane>
             </Dialog>
