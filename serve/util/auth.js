@@ -18,9 +18,7 @@ function requiresAuth() {
         try {
             let result = await getUserFromAuthToken(AuthToken);
             user = result.rows[0];
-						console.log("GOT THE USER", user);
             if (!user) {
-								console.log("sending 401 from hook");
                 res.sendStatus(401);
                 return;
             }

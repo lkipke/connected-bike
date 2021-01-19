@@ -21,7 +21,6 @@ const app = express();
 const port = 9000;
 
 // middleware
-app.use();
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(requiresAuth());

@@ -19,7 +19,6 @@ async function writeToDatabase(pingData) {
 
     try {
         await insertPing(mapped);
-        console.log('success!');
     } catch (e) {
         console.error('Failure', mapped, e);
     }
