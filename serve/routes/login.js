@@ -36,7 +36,7 @@ router.post('/', async function (req, res, next) {
         return res.status(500);
     }
 
-		console.log("USER", user)
+    console.log('USER', user);
     let token = generateSessionToken();
     updateAuthToken(username, token);
     res.cookie('AuthToken', token, {

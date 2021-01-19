@@ -18,3 +18,7 @@ export let logIn = async (username, password) => {
         },
     });
 };
+
+export let getUser = async (username, password) => {
+    return await fetch(`${host}api/user`);
+};

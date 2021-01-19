@@ -6,6 +6,7 @@ const cors = require('cors');
 
 const sendPing = require('./routes/sendPing');
 const login = require('./routes/login');
+const user = require('./routes/user');
 const { requiresAuth } = require('./util/auth');
 
 // first, load up our environment
@@ -29,6 +30,7 @@ app.use(requiresAuth());
 // register routes
 app.use('/api/sendPing', sendPing);
 app.use('/api/login', login);
+app.use('/api/user', user);
 
 // static react app
 app.use(express.static(path.join(__dirname, '..', 'build')));

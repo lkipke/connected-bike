@@ -1,36 +1,36 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState, useCallback } from 'react';
 import { throttleTime } from 'rxjs/operators';
-import { connect } from '../services/bikeDataService';
-import Dashboard from './Dashboard';
-import { BluetoothIcon, PauseIcon, PlayIcon, StopIcon } from './Icons';
-import './App.css';
-import { useCallback } from 'react';
+import { Pane } from 'evergreen-ui';
 import { v4 as uuidv4 } from 'uuid';
-import { uploadPingData } from '../services/bikeApi';
-import { Button, Pane } from 'evergreen-ui';
-import { LoginDialog } from './LoginDialog';
+import './App.css';
 
-const DISCONNECTED = 'disconnected';
-const CONNECTED = 'connected';
-const RECORDING = 'recording';
-const STOPPED = 'stopped';
+import { BluetoothIcon, PauseIcon, PlayIcon } from './Icons';
+import Dashboard from './Dashboard';
+import { uploadPingData } from '../services/bikeApi';
+import { connect } from '../services/bikeDataService';
+import { LoginDialog } from './LoginDialog';
+import { UserContext } from './User';
+
+let DISCONNECTED = 'disconnected';
+let CONNECTED = 'connected';
+let RECORDING = 'recording';
+let STOPPED = 'stopped';
 
 function App() {
-    const [activityState, setActivityState] = useState(DISCONNECTED);
-    const [displayData, setDisplayData] = useState();
-    const [intervalId, setIntervalId] = useState([]);
-    const [sessionId, setSessionId] = useState(uuidv4());
-    const [isDialogShown, setDialogShown] = useState(false);
-    const [loggedInUser, setLoggedInUser] = useState(null);
+    let [activityState, setActivityState] = useState(DISCONNECTED);
+    let [displayData, setDisplayData] = useState();
+    let [intervalId, setIntervalId] = useState([]);
+    let [sessionId, setSessionId] = useState(uuidv4());
+    let { user } = useContext(UserContext);
 
-    const unpushedData = useRef([]);
-    const isRecording = useRef(false);
-    const bikeData$ = useRef();
-    const [message, setMessage] = useState();
+    let unpushedData = useRef([]);
+    let isRecording = useRef(false);
+    let bikeData$ = useRef();
+    let [message, setMessage] = useState();
 
-    const handleNewData = useCallback(
+    let handleNewData = useCallback(
         (data) => {
-            if (isRecording.current) {
+            if (user && isRecording.current) {
                 unpushedData.current = [
                     ...unpushedData.current,
                     { ...data, sessionId },
@@ -38,16 +38,18 @@ function App() {
             }
             setDisplayData(data);
         },
-        [sessionId]
+        [sessionId, user]
     );
 
-    const handleConnect = () => {
+    let handleConnect = () => {
         bikeData$.current = connect();
         setActivityState(CONNECTED);
         bikeData$.current.pipe(throttleTime(1000)).subscribe(handleNewData);
     };
 
-    const handleUpload = () => {
+    let handleUpload = () => {
+        if (!user) return;
+
         let uploadData = [...unpushedData.current];
         unpushedData.current = [];
 
@@ -62,7 +64,7 @@ function App() {
         }
     };
 
-    const handleRecord = () => {
+    let handleRecord = () => {
         setActivityState(RECORDING);
         isRecording.current = true;
 
@@ -72,7 +74,7 @@ function App() {
         setIntervalId(interval);
     };
 
-    const handleStop = () => {
+    let handleStop = () => {
         setActivityState(CONNECTED);
         isRecording.current = false;
 
@@ -84,14 +86,7 @@ function App() {
 
     return (
         <Pane>
-            <Button onClick={() => setDialogShown(true)}>
-                {loggedInUser ? loggedInUser.username : 'log in'}
-            </Button>
-            <LoginDialog
-                isDialogShown={isDialogShown}
-                setDialogShown={setDialogShown}
-                setLoggedInUser={setLoggedInUser}
-            />
+            <LoginDialog />
             <div className='app'>
                 <h1>connected bike</h1>
                 {message && (
