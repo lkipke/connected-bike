@@ -2,7 +2,6 @@ const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
-const cors = require('cors');
 
 const sendPing = require('./routes/sendPing');
 const login = require('./routes/login');
@@ -22,7 +21,7 @@ const app = express();
 const port = 9000;
 
 // middleware
-app.use(cors());
+app.use();
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(requiresAuth());
