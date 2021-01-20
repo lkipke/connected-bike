@@ -52,30 +52,34 @@ async function getUserFromAuthToken(authToken) {
 
 async function startSession(userId, sessionId, time) {
     let pool = getPool();
-    await Promise.all([
+    let results = await Promise.all([
         pool.query('UPDATE users SET last_session_id = $1 WHERE user_id = $2', [
             sessionId,
             userId,
         ]),
         pool.query(
-            'INSERT INTO sessions (user_id, session_id, start_utc) VALUES ($1, $2, $3)',
+            'INSERT INTO sessions (user_id, session_id, start_utc) VALUES ($1, $2, $3) RETURNING *',
             [userId, sessionId, time]
         ),
     ]);
+
+    return results[1];
 }
 
 async function endSession(userId, sessionId, time) {
     let pool = getPool();
-    await Promise.all([
+    let results = await Promise.all([
         pool.query('UPDATE users SET last_session_id = $1 WHERE user_id = $2', [
             sessionId,
             userId,
         ]),
-        pool.query('UPDATE sessions SET end_utc = $1 WHERE session_id = $2', [
-            time,
-            sessionId,
-        ]),
+        pool.query(
+            'UPDATE sessions SET end_utc = $1 WHERE session_id = $2 RETURNING *',
+            [time, sessionId]
+        ),
     ]);
+
+    return results[1];
 }
 
 module.exports = {

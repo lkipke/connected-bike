@@ -22,8 +22,12 @@ export let getUser = async (username, password) => {
     return await fetch(`${host}api/user`);
 };
 
+export let getSession = async (sessionId) => {
+    return await fetch(`${host}api/session?id=${sessionId}`);
+};
+
 export let startSession = async (sessionId) => {
-    await fetch(`${host}api/session/start`, {
+    return await fetch(`${host}api/session/start`, {
         method: 'POST',
         body: JSON.stringify({ sessionId, time: Date.now() }),
         headers: {
@@ -33,7 +37,7 @@ export let startSession = async (sessionId) => {
 };
 
 export let endSession = async (sessionId) => {
-    await fetch(`${host}api/session/end`, {
+    return await fetch(`${host}api/session/end`, {
         method: 'POST',
         body: JSON.stringify({ sessionId, time: Date.now() }),
         headers: {

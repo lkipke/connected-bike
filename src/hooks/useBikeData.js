@@ -1,16 +1,12 @@
-import { useState, useRef, useCallback, useContext } from 'react';
+import { useState, useRef, useCallback, useContext, useEffect } from 'react';
 import { throttleTime } from 'rxjs/operators';
+import { toaster } from 'evergreen-ui';
 import { connect } from '../services/bikeDataService';
 import { UserContext } from '../components/User';
 import { uploadPingData } from '../services/bikeApi';
+import { CONNECTED, RECORDING } from '../components/ActivityStates';
 
-export let DISCONNECTED = 'disconnected';
-export let CONNECTED = 'connected';
-export let RECORDING = 'recording';
-export let STOPPED = 'stopped';
-
-export let useBikeData = (sessionId) => {
-    let [activityState, setActivityState] = useState(DISCONNECTED);
+export let useBikeData = ({ sessionId, activityState, setActivityState }) => {
     let [displayData, setDisplayData] = useState();
     let [dataTickIntervalId, setDataTickIntervalId] = useState([]);
     let [isUploading, setIsUploading] = useState(false);
@@ -21,6 +17,54 @@ export let useBikeData = (sessionId) => {
     let unpushedData = useRef([]);
     let isRecording = useRef(false);
     let bikeObserver = useRef();
+
+    let handleUpload = useCallback(() => {
+        if (!user || !unpushedData.current.length) return;
+
+        setIsUploading(true);
+        setUploadError(null);
+
+        toaster.notify('uploading data', {
+            id: 'upload-status',
+        });
+
+        let uploadData = [...unpushedData.current];
+        unpushedData.current = [];
+        uploadPingData(uploadData)
+            .then((res) => {
+                if (!res.ok) throw res;
+                toaster.success('upload complete!', { id: 'upload-status' });
+            })
+            .catch((e) => {
+                console.error(e);
+                unpushedData.current = [...unpushedData.current, ...uploadData];
+                toaster.danger('error uploading data!', {
+                    id: 'upload-status',
+                });
+            });
+    }, [user]);
+
+    // Handle recording start
+    useEffect(() => {
+        if (activityState === RECORDING && !isRecording.current) {
+            isRecording.current = true;
+            let interval = setInterval(() => {
+                handleUpload();
+            }, 10000);
+            setDataTickIntervalId(interval);
+        }
+    }, [activityState, handleUpload]);
+
+    // Handle recording stop
+    useEffect(() => {
+        if (activityState === CONNECTED && isRecording.current) {
+            isRecording.current = false;
+            clearInterval(dataTickIntervalId);
+            setDataTickIntervalId(null);
+
+            handleUpload();
+        }
+    }, [activityState, dataTickIntervalId, handleUpload]);
 
     let handleNewData = useCallback(
         (data) => {
@@ -41,48 +85,9 @@ export let useBikeData = (sessionId) => {
         bikeObserver.current.pipe(throttleTime(1000)).subscribe(handleNewData);
     };
 
-    let handleRecord = () => {
-        setActivityState(RECORDING);
-        isRecording.current = true;
-
-        let interval = setInterval(() => {
-            handleUpload();
-        }, 10000);
-        setDataTickIntervalId(interval);
-    };
-
-    let handleUpload = () => {
-        if (!user) return;
-
-        setIsUploading(true);
-        setUploadError(null);
-
-        let uploadData = [...unpushedData.current];
-        unpushedData.current = [];
-        uploadPingData(uploadData)
-            .then(() => setIsUploading(false))
-            .catch((e) => {
-                console.error(e);
-                unpushedData.current = [...unpushedData.current, ...uploadData];
-                setUploadError('Error uploading data!');
-            });
-    };
-
-    let handleStop = () => {
-        setActivityState(CONNECTED);
-        isRecording.current = false;
-
-        handleUpload();
-        clearInterval(dataTickIntervalId);
-        setDataTickIntervalId(null);
-    };
-
     return {
-        activityState,
         displayData,
         handleConnect,
-        handleRecord,
-        handleStop,
         isUploading,
         uploadError,
     };

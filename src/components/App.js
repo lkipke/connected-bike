@@ -17,30 +17,27 @@ import Dashboard from './Dashboard';
 import { startSession, endSession } from '../services/bikeApi';
 import { LoginDialog } from './LoginDialog';
 import { UserContext } from './User';
-import {
-    useBikeData,
-    RECORDING,
-    DISCONNECTED,
-    CONNECTED,
-} from '../hooks/useBikeData';
+import { Controls } from './Controls';
+import { useBikeData } from '../hooks/useBikeData';
+import { CONNECTED, DISCONNECTED, RECORDING } from './ActivityStates';
 
 function App() {
-    let [sessionId, setSessionId] = useState(uuidv4());
+    let [activityState, setActivityState] = useState(DISCONNECTED);
     let [isFirstRecord, setIsFirstRecord] = useState(true);
 
     let { user } = useContext(UserContext);
-    let {
+    let sessionId = user ? user.last_session_id : null;
+
+    let { displayData, handleConnect } = useBikeData({
+        sessionId,
         activityState,
-        displayData,
-        handleConnect,
-        handleRecord,
-        isUploading,
-        uploadError,
-    } = useBikeData(sessionId);
+        setActivityState,
+    });
 
     // handle recording
     useEffect(() => {
-        if (!user) return;
+        if (!user || !sessionId) return;
+
         if (isFirstRecord && activityState === RECORDING) {
             startSession(sessionId).catch((e) => console.error(e));
             setIsFirstRecord(false);
@@ -53,56 +50,33 @@ function App() {
         <Pane>
             <LoginDialog />
             <div className='app'>
-                {activityState === DISCONNECTED && (
+                {activityState === DISCONNECTED ? (
                     <Button
                         iconBefore={LargeBluetoothIcon}
-                        onClick={handleConnect}
-                        disabled={activityState !== DISCONNECTED}
                         appearance='minimal'
                         height={70}
+                        onClick={handleConnect}
                     >
                         <Heading size={800}>connect to bike</Heading>
                     </Button>
-                )}
-
-                {activityState !== DISCONNECTED && (
+                ) : (
                     <Button
+                        iconBefore={TickCircleIcon}
                         appearance='minimal'
                         height={70}
-                        iconBefore={TickCircleIcon}
                         disabled={true}
                     >
                         <Heading size={800}>connected</Heading>
                     </Button>
                 )}
 
-                {uploadError && (
-                    <Text size={500} color='#ec4c47'>
-                        {uploadError}
-                    </Text>
+                {user && (
+                    <Controls
+                        activityState={activityState}
+                        setActivityState={setActivityState}
+                        sessionId={sessionId}
+                    />
                 )}
-
-                {isUploading && (
-                    <Pane
-                        display='flex'
-                        alignItems='center'
-                        justifyContent='center'
-                    >
-                        <Spinner size={24} marginRight={10} />
-                        <Text size={500}>uploading...</Text>
-                    </Pane>
-                )}
-
-                <Pane
-                    display='flex'
-                    alignItems='center'
-                    justifyContent='center'
-                    marginTop={20}
-                >
-                    {activityState === CONNECTED && (
-                        <Button>start new session</Button>
-                    )}
-                </Pane>
 
                 {displayData && <Dashboard data={displayData} />}
             </div>

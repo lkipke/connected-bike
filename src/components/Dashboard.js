@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './Dashboard.css';
 import { getCalories, getHeartRateZone } from '../services/dataTransforms';
+import { Heading, Pane, Text } from 'evergreen-ui';
 
 const Dashboard = ({ data = {} }) => {
     let { speed, cadence, power, heartRate } = data;
@@ -36,22 +37,29 @@ const Dashboard = ({ data = {} }) => {
                 <Meter label='kmph' value={speed} />
             </div>
             <div className='dashboard'>
-                <div>
-                    <Meter label='heart rate' value={heartRate} />
-                    <span className='heart-rate-zone'>{heartRateZone}</span>
-                </div>
+                <Meter
+                    label='heart rate'
+                    value={heartRate}
+                    extraInfo={heartRateZone}
+                />
                 <Meter label='calories' value={displayCalories} />
             </div>
         </>
     );
 };
 
-const Meter = ({ label, value }) => {
+const Meter = ({ label, value, extraInfo }) => {
     return (
-        <div className='meter'>
-            <div className='value'>{value}</div>
-            <div className='label'>{label}</div>
-        </div>
+        <Pane paddingRight={25} paddingLeft={25}>
+            <Heading size={900}>{value}</Heading>
+            <Text>{label}</Text>
+            {extraInfo && (
+                <>
+                    <br />
+                    <Text>{extraInfo}</Text>
+                </>
+            )}
+        </Pane>
     );
 };
 

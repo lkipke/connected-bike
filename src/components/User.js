@@ -1,12 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { getUser } from '../services/bikeApi';
 
 export const UserContext = React.createContext();
 export let User = ({ children }) => {
     let [user, setUser] = useState();
+
+    let refreshUser = useCallback(() => {
+        getUser()
+            .then((res) => res.json())
+            .then((user) => {
+                setUser(user);
+            })
+            .catch(() => {
+                /* swallow errors */
+            });
+    }, []);
+
     let [context, setContext] = useState({
         user,
-        setUser,
+        refreshUser,
     });
 
     useEffect(() => {
@@ -14,13 +26,8 @@ export let User = ({ children }) => {
     }, [user]);
 
     useEffect(() => {
-        getUser()
-            .then((res) => res.json())
-            .then((user) => setUser(user))
-            .catch(() => {
-                /* swallow errors */
-            });
-    }, []);
+        refreshUser();
+    }, [refreshUser]);
 
     return (
         <UserContext.Provider value={context}>{children}</UserContext.Provider>

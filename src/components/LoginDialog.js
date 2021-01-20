@@ -44,7 +44,9 @@ let LoginDialog = () => {
 
     return (
         <>
-            <Button onClick={onClick}>{user ? user.username : 'log in'}</Button>
+            <Button appearance='minimal' onClick={onClick}>
+                {user ? user.username : 'log in'}
+            </Button>
             <Dialog
                 isShown={isDialogShown}
                 title='Log in'
