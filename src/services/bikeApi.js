@@ -1,4 +1,3 @@
-//let host = 'http://localhost:9000/';
 let host = '';
 export let uploadPingData = async (uploadData) => {
     await fetch(`${host}api/sendPing`, {
@@ -21,4 +20,24 @@ export let logIn = async (username, password) => {
 
 export let getUser = async (username, password) => {
     return await fetch(`${host}api/user`);
+};
+
+export let startSession = async (sessionId) => {
+    await fetch(`${host}api/session/start`, {
+        method: 'POST',
+        body: JSON.stringify({ sessionId, time: Date.now() }),
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+};
+
+export let endSession = async (sessionId) => {
+    await fetch(`${host}api/session/end`, {
+        method: 'POST',
+        body: JSON.stringify({ sessionId, time: Date.now() }),
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
 };

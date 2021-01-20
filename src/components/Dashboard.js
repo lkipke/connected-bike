@@ -31,13 +31,13 @@ const Dashboard = ({ data = {} }) => {
     return (
         <>
             <div className='dashboard'>
-                <Meter label='kmph' value={speed} />
                 <Meter label='cadence (rpm)' value={cadence} />
-                <Meter label='watts' value={power} />
+                <Meter label='power' value={power} />
+                <Meter label='kmph' value={speed} />
             </div>
             <div className='dashboard'>
                 <div>
-                    <Meter label='bpm' value={heartRate} />
+                    <Meter label='heart rate' value={heartRate} />
                     <span className='heart-rate-zone'>{heartRateZone}</span>
                 </div>
                 <Meter label='calories' value={displayCalories} />

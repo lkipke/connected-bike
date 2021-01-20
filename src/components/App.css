@@ -1,14 +1,26 @@
 .app {
-  text-align: center;
+    text-align: center;
 }
 
 .account-controls {
-  margin-top: 5rem;
+    margin-top: 5rem;
 }
 
 .message {
-  background-color: var(--yellow);
-  padding: 0.5rem 1rem;
-  margin: 2rem 0;
-  display: inline-block;
+    background-color: var(--yellow);
+    padding: 0.5rem 1rem;
+    margin: 2rem 0;
+    display: inline-block;
+}
+
+.main-button {
+    background-color: var(--black);
+    border: none;
+    padding: 2rem;
+    color: var(--white);
+    border-radius: 0.1rem;
+    font-weight: 700;
+    margin: 1rem;
+    box-shadow: 0.5rem 0.5rem 0px 0px var(--blue);
+    transition: box-shadow 200ms ease-in-out;
 }

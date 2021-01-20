@@ -37,7 +37,7 @@ async function updateAuthToken(username, authToken) {
 async function getUserFromUsernamePassword(username, password) {
     let pool = getPool();
     return await pool.query(
-        'SELECT username, first_name, last_name, user_id FROM users WHERE username = $1 AND password = $2',
+        'SELECT username, first_name, last_name, user_id, last_session_id FROM users WHERE username = $1 AND password = $2',
         [username, password]
     );
 }
@@ -45,9 +45,37 @@ async function getUserFromUsernamePassword(username, password) {
 async function getUserFromAuthToken(authToken) {
     let pool = getPool();
     return await pool.query(
-        'SELECT username, first_name, last_name, user_id FROM users WHERE auth_token = $1',
+        'SELECT username, first_name, last_name, user_id, last_session_id FROM users WHERE auth_token = $1',
         [authToken]
     );
+}
+
+async function startSession(userId, sessionId, time) {
+    let pool = getPool();
+    await Promise.all([
+        pool.query('UPDATE users SET last_session_id = $1 WHERE user_id = $2', [
+            sessionId,
+            userId,
+        ]),
+        pool.query(
+            'INSERT INTO sessions (user_id, session_id, start_utc) VALUES ($1, $2, $3)',
+            [userId, sessionId, time]
+        ),
+    ]);
+}
+
+async function endSession(userId, sessionId, time) {
+    let pool = getPool();
+    await Promise.all([
+        pool.query('UPDATE users SET last_session_id = $1 WHERE user_id = $2', [
+            sessionId,
+            userId,
+        ]),
+        pool.query('UPDATE sessions SET end_utc = $1 WHERE session_id = $2', [
+            time,
+            sessionId,
+        ]),
+    ]);
 }
 
 module.exports = {
@@ -55,4 +83,6 @@ module.exports = {
     updateAuthToken,
     getUserFromUsernamePassword,
     getUserFromAuthToken,
+    startSession,
+    endSession,
 };
