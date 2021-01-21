@@ -63,7 +63,7 @@ async function startSession(userId, sessionId, time) {
         ),
     ]);
 
-    return results[1];
+    return results[1].rows[0];
 }
 
 async function endSession(userId, sessionId, time) {
@@ -79,7 +79,13 @@ async function endSession(userId, sessionId, time) {
         ),
     ]);
 
-    return results[1];
+    return results[1].rows[0];
+}
+
+async function getSession(sessionId) {
+    let pool = getPool();
+    let results = await pool.query('SELECT * FROM sessions WHERE session_id = $1', [sessionId]);
+    return results.rows[0];
 }
 
 module.exports = {
@@ -89,4 +95,5 @@ module.exports = {
     getUserFromAuthToken,
     startSession,
     endSession,
+		getSession
 };

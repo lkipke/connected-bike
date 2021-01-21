@@ -19,8 +19,9 @@ import { UserContext } from './User';
 let RecordIcon = <BaseRecordIcon color='danger' size={20} />;
 let PauseIcon = <BasePauseIcon size={20} />;
 
-function convertDate(dateObj) {
-    if (dateObj instanceof Date) {
+function convertDate(date) {
+    if (date) {
+				let dateObj = new Date(parseInt(date));
         return `${
             dateObj.getMonth() + 1
         }/${dateObj.getDate()} ${dateObj.getHours()}:${dateObj.getMinutes()}`;
@@ -40,12 +41,13 @@ export let Controls = ({ activityState, setActivityState }) => {
             (!session || session.id !== user.last_session_id)
         ) {
             getSession(user.last_session_id)
-                .then((res) =>
+                .then((res) => {
+                    console.log("RES", res);
                     setSession({
-                        start: convertDate(res.session_id),
+                        start: convertDate(res.start_utc),
                         id: res.session_id,
                     })
-                )
+                })
                 .catch((e) => console.error(e));
         }
     }, [user, session]);
@@ -59,7 +61,7 @@ export let Controls = ({ activityState, setActivityState }) => {
                     last_session_id: newSessionId,
                 }));
                 setSession({
-                    start: convertDate(res.session_id),
+                    start: convertDate(res.start_utc),
                     id: res.session_id,
                 });
             })
@@ -109,7 +111,7 @@ export let Controls = ({ activityState, setActivityState }) => {
 
                 <Button
                     appearance='minimal'
-                    disabled={activityState === RECORDING}
+                    disabled={true}
                     onClick={() => createNewSession()}
                 >
                     <Text size={500}>start new session</Text>

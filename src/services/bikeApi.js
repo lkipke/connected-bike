@@ -28,7 +28,7 @@ export let getUser = async (username, password) => {
 };
 
 export let getSession = async (sessionId) => {
-    return await wrappedFetch(`${host}api/session?id=${sessionId}`);
+    return await wrappedFetch(`${host}api/session/${sessionId}`, {});
 };
 
 export let startSession = async (sessionId) => {

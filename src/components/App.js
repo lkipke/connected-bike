@@ -24,9 +24,10 @@ import { CONNECTED, DISCONNECTED, RECORDING } from './ActivityStates';
 function App() {
     let [activityState, setActivityState] = useState(DISCONNECTED);
     let [isFirstRecord, setIsFirstRecord] = useState(true);
+    let [sessionId, setSessionId] = useState(uuidv4());
 
     let { user } = useContext(UserContext);
-    let sessionId = user ? user.last_session_id : null;
+    //let sessionId = user ? user.last_session_id : null;
 
     let { displayData, handleConnect } = useBikeData({
         sessionId,
