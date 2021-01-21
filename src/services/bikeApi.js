@@ -1,6 +1,11 @@
 let host = '';
+
+let wrappedFetch = async (path, data) => {
+    return fetch(path, data).then((res) => res.json());
+};
+
 export let uploadPingData = async (uploadData) => {
-    await fetch(`${host}api/sendPing`, {
+    await wrappedFetch(`${host}api/sendPing`, {
         method: 'POST',
         body: JSON.stringify(uploadData),
         headers: {
@@ -10,7 +15,7 @@ export let uploadPingData = async (uploadData) => {
 };
 
 export let logIn = async (username, password) => {
-    return await fetch(`${host}api/login`, {
+    return wrappedFetch(`${host}api/login`, {
         method: 'POST',
         headers: {
             Authorization: 'Basic ' + btoa(username + ':' + password),
@@ -19,15 +24,15 @@ export let logIn = async (username, password) => {
 };
 
 export let getUser = async (username, password) => {
-    return await fetch(`${host}api/user`);
+    return await wrappedFetch(`${host}api/user`);
 };
 
 export let getSession = async (sessionId) => {
-    return await fetch(`${host}api/session?id=${sessionId}`);
+    return await wrappedFetch(`${host}api/session?id=${sessionId}`);
 };
 
 export let startSession = async (sessionId) => {
-    return await fetch(`${host}api/session/start`, {
+    return await wrappedFetch(`${host}api/session/start`, {
         method: 'POST',
         body: JSON.stringify({ sessionId, time: Date.now() }),
         headers: {
@@ -37,7 +42,7 @@ export let startSession = async (sessionId) => {
 };
 
 export let endSession = async (sessionId) => {
-    return await fetch(`${host}api/session/end`, {
+    return await wrappedFetch(`${host}api/session/end`, {
         method: 'POST',
         body: JSON.stringify({ sessionId, time: Date.now() }),
         headers: {

@@ -24,7 +24,6 @@ let LoginDialog = () => {
 
         setLoading(true);
         logIn(username, password)
-            .then((res) => res.json())
             .then((user) => {
                 setLoading(false);
                 setUser(user);

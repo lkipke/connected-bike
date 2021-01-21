@@ -6,7 +6,6 @@ import { Heading, Pane, Text } from 'evergreen-ui';
 const Dashboard = ({ data = {} }) => {
     let { speed, cadence, power, heartRate } = data;
     let [calories, setCalories] = useState(0);
-    let [heartRateZone, setHeartRateZone] = useState();
     let lastRenderTimeMs = useRef(Date.now());
 
     useEffect(() => {
@@ -23,10 +22,6 @@ const Dashboard = ({ data = {} }) => {
         lastRenderTimeMs.current = currRender;
     }, [speed, cadence, power, heartRate, calories]);
 
-    useEffect(() => {
-        setHeartRateZone(getHeartRateZone(heartRate));
-    }, [heartRate]);
-
     let displayCalories = calories ? Math.round(calories) : '';
 
     return (
@@ -40,7 +35,7 @@ const Dashboard = ({ data = {} }) => {
                 <Meter
                     label='heart rate'
                     value={heartRate}
-                    extraInfo={heartRateZone}
+                    extraInfo={getHeartRateZone(heartRate)}
                 />
                 <Meter label='calories' value={displayCalories} />
             </div>

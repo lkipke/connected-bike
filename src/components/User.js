@@ -7,7 +7,6 @@ export let User = ({ children }) => {
 
     let refreshUser = useCallback(() => {
         getUser()
-            .then((res) => res.json())
             .then((user) => {
                 setUser(user);
             })
@@ -19,6 +18,7 @@ export let User = ({ children }) => {
     let [context, setContext] = useState({
         user,
         refreshUser,
+        setUser,
     });
 
     useEffect(() => {

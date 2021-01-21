@@ -9,20 +9,24 @@ const getHashedPassword = (password) => {
 
 function requiresAuth() {
     return async (req, res, next) => {
-        if (!req.path.includes('/api/') || req.path === "/api/login") {
+        if (!req.path.includes('/api/') || req.path === '/api/login') {
             return next();
         }
 
         let { AuthToken } = req.signedCookies;
         let user = null;
         try {
-            let result = await getUserFromAuthToken(AuthToken);
-            user = result.rows[0];
+            if (AuthToken) {
+                let result = await getUserFromAuthToken(AuthToken);
+                user = result.rows[0];
+            }
+
             if (!user) {
                 res.sendStatus(401);
                 return;
             }
         } catch (e) {
+            console.log(e);
             res.sendStatus(500);
             return;
         }
