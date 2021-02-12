@@ -14,6 +14,7 @@ async function writeToDatabase(pingData) {
             obj.speed,
             obj.cadence,
             obj.power,
+            obj.calories,
         ];
     });
 

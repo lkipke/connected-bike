@@ -32,7 +32,8 @@ const parseBikeData = (value) => {
 
 export const connect = () => {
     // random data for debugging
-    if (false) {
+    let useFakeData = true;
+    if (useFakeData) {
         const rnd = (max) => Math.floor(Math.random() * Math.floor(max));
         return new Observable((subject) => {
             setInterval(() => {

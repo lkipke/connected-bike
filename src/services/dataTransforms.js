@@ -21,7 +21,8 @@ const getZoneBound = (percent) => {
 
 export const getCalories = (d) => {
     // https://gearandgrit.com/convert-watts-calories-burned-cycling/
-    const hours = (d.endTimeMs - d.startTimeMs) / (1000 * 60 * 60);
+    // assume that this is called every one second
+    const hours = 1 / (60 * 60);
     const fromWatts = d.power * hours * 3.6;
 
     // https://www.verywellfit.com/what-is-bmr-or-basal-metabolic-rate-3495380

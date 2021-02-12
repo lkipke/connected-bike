@@ -5,12 +5,14 @@ import { connect } from '../services/bikeDataService';
 import { UserContext } from '../components/User';
 import { uploadPingData } from '../services/bikeApi';
 import { CONNECTED, RECORDING } from '../components/ActivityStates';
+import { getCalories } from '../services/dataTransforms';
 
 export let useBikeData = ({ sessionId, activityState, setActivityState }) => {
     let [displayData, setDisplayData] = useState();
     let [dataTickIntervalId, setDataTickIntervalId] = useState([]);
     let [isUploading, setIsUploading] = useState(false);
     let [uploadError, setUploadError] = useState(null);
+    let calories = useRef(0);
 
     let { user } = useContext(UserContext);
 
@@ -24,16 +26,10 @@ export let useBikeData = ({ sessionId, activityState, setActivityState }) => {
         setIsUploading(true);
         setUploadError(null);
 
-        toaster.notify('uploading data', {
-            id: 'upload-status',
-        });
-
         let uploadData = [...unpushedData.current];
         unpushedData.current = [];
         uploadPingData(uploadData)
-            .then((res) => {
-                toaster.success('upload complete!', { id: 'upload-status' });
-            })
+            .then((res) => {})
             .catch((e) => {
                 console.error(e);
                 unpushedData.current = [...unpushedData.current, ...uploadData];
@@ -67,13 +63,18 @@ export let useBikeData = ({ sessionId, activityState, setActivityState }) => {
 
     let handleNewData = useCallback(
         (data) => {
+            calories.current += getCalories(data);
+            let dataWithCalories = {
+                ...data,
+                calories: Math.round(calories.current),
+            };
             if (user && isRecording.current) {
                 unpushedData.current = [
                     ...unpushedData.current,
-                    { ...data, sessionId },
+                    { ...dataWithCalories, sessionId },
                 ];
             }
-            setDisplayData(data);
+            setDisplayData(dataWithCalories);
         },
         [sessionId, user]
     );

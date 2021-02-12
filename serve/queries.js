@@ -19,7 +19,7 @@ function getPool() {
 async function insertPing(variables) {
     let query = format(
         'INSERT INTO pings' +
-            ' (time, session_id, heart_rate, kmph, rpm, watts) VALUES %L',
+            ' (time, session_id, heart_rate, kmph, rpm, watts, calories) VALUES %L',
         variables
     );
     let pool = getPool();
@@ -84,7 +84,10 @@ async function endSession(userId, sessionId, time) {
 
 async function getSession(sessionId) {
     let pool = getPool();
-    let results = await pool.query('SELECT * FROM sessions WHERE session_id = $1', [sessionId]);
+    let results = await pool.query(
+        'SELECT * FROM sessions WHERE session_id = $1',
+        [sessionId]
+    );
     return results.rows[0];
 }
 
@@ -95,5 +98,5 @@ module.exports = {
     getUserFromAuthToken,
     startSession,
     endSession,
-		getSession
+    getSession,
 };

@@ -4,26 +4,7 @@ import { getCalories, getHeartRateZone } from '../services/dataTransforms';
 import { Heading, Pane, Text } from 'evergreen-ui';
 
 const Dashboard = ({ data = {} }) => {
-    let { speed, cadence, power, heartRate } = data;
-    let [calories, setCalories] = useState(0);
-    let lastRenderTimeMs = useRef(Date.now());
-
-    useEffect(() => {
-        let currRender = Date.now();
-        setCalories(
-            (oldCalories) =>
-                (oldCalories || 0) +
-                getCalories({
-                    startTimeMs: lastRenderTimeMs.current,
-                    endTimeMs: currRender,
-                    power,
-                })
-        );
-        lastRenderTimeMs.current = currRender;
-    }, [speed, cadence, power, heartRate, calories]);
-
-    let displayCalories = calories ? Math.round(calories) : '';
-
+    let { speed, cadence, power, heartRate, calories } = data;
     return (
         <>
             <div className='dashboard'>
@@ -37,7 +18,7 @@ const Dashboard = ({ data = {} }) => {
                     value={heartRate}
                     extraInfo={getHeartRateZone(heartRate)}
                 />
-                <Meter label='calories' value={displayCalories} />
+                <Meter label='calories' value={calories} />
             </div>
         </>
     );
