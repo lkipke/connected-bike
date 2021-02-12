@@ -32,7 +32,6 @@ export let useBikeData = ({ sessionId, activityState, setActivityState }) => {
         unpushedData.current = [];
         uploadPingData(uploadData)
             .then((res) => {
-                if (!res.ok) throw res;
                 toaster.success('upload complete!', { id: 'upload-status' });
             })
             .catch((e) => {

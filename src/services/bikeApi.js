@@ -5,7 +5,7 @@ let wrappedFetch = async (path, data) => {
 };
 
 export let uploadPingData = async (uploadData) => {
-    await wrappedFetch(`${host}api/sendPing`, {
+    await fetch(`${host}api/sendPing`, {
         method: 'POST',
         body: JSON.stringify(uploadData),
         headers: {

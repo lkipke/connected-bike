@@ -35,18 +35,6 @@ function App() {
         setActivityState,
     });
 
-    // handle recording
-    useEffect(() => {
-        if (!user || !sessionId) return;
-
-        if (isFirstRecord && activityState === RECORDING) {
-            startSession(sessionId).catch((e) => console.error(e));
-            setIsFirstRecord(false);
-        } else if (!isFirstRecord && activityState === CONNECTED) {
-            endSession(sessionId).catch((e) => console.error(e));
-        }
-    }, [user, activityState, sessionId, isFirstRecord]);
-
     return (
         <Pane>
             <LoginDialog />
